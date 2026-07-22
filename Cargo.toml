@@ -1,0 +1,40 @@
+[package]
+name = "canpi-layout"
+version = "0.1.0"
+authors = ["Mark Thornber <mark.thornber@merg.org.uk>"]
+edition = "2024"
+
+[lib]
+name = "canpi_layout"
+path = "src/lib.rs"
+test = true
+crate-type = ["lib"]
+required-features = []
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+include_dir = "0.7.2"
+output = "*"
+# Data serialisation library
+serde = { version = "1.0.219", features = ["derive"] }
+serde_json = "1.0.141"
+serde_test = "1.0.130"
+# JSON libraries
+jsonschema = "0.48.2"
+schemars = { version = "1.0.4", features = ["either1"] }
+# Environment variable access libraries
+dotenv = "0.15.0"
+# .ini file library
+#configparser = "3.0.0"
+rust-ini = "0.21.1"
+# Error handling
+thiserror = "2.0.12"
+anyhow = "1.0.98"
+log = "0.4.27"
+# Create file backup
+# backitup = "0.1.2"
+glob = "0.3.2"
+env_logger = "0.11.8"
+slugrs = "0.5.0"
+# either = { version = "1.15.0", features = ["serde"] }
