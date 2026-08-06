@@ -12,6 +12,8 @@ use serde::Deserialize;
 use serde_json::Value;
 
 use core::str;
+use glob::MatchOptions;
+use glob::glob_with;
 use std::{fs::File, io::BufReader, path::Path, string::String};
 
 use log::error;
@@ -107,6 +109,7 @@ pub enum SwitchType {
     PushButton,
 }
 
+#[allow(dead_code)]
 #[derive(Clone, Deserialize, Debug, JsonSchema)]
 /// Definition of a control in the diagram
 pub struct Control {
@@ -122,6 +125,7 @@ pub struct Control {
     tostate: TOState,
 }
 
+#[allow(dead_code)]
 #[derive(Clone, Deserialize, Debug, JsonSchema)]
 /// Definition of the diagram for the panel
 pub struct Diagram {
@@ -154,6 +158,7 @@ pub enum Direction {
     SW,
 }
 
+#[allow(dead_code)]
 #[derive(Clone, Deserialize, Debug, JsonSchema)]
 pub struct Track {
     /// Coordinates of the track segment in the diagram
@@ -201,6 +206,7 @@ pub struct TurnOut {
     tostate: TOState,
 }
 
+#[allow(dead_code)]
 #[derive(Clone, Deserialize, Debug, JsonSchema)]
 /// Definition of the panel details
 pub struct PanelDetails {
@@ -234,7 +240,7 @@ impl Layout {
     /// The type definition of Layout is used to create a compiled JSON schema
     /// that will be used to validate the Layout definitions being loaded to
     /// Layout
-    pub fn new<P: AsRef<Path> + std::fmt::Display>(layout_path: P) -> Layout {
+    pub fn new<P: AsRef<Path> + std::fmt::Debug>(layout_path: P) -> Layout {
         let schema = Self::create_layout_schema();
         let layout = Self::load_layout(layout_path, &schema);
         Layout { schema, layout }
@@ -247,7 +253,7 @@ impl Layout {
     }
 
     /// Load the Layout definitions from `layout_path`
-    fn load_layout<P: AsRef<Path> + std::fmt::Display>(
+    fn load_layout<P: AsRef<Path> + std::fmt::Debug>(
         layout_path: P,
         schema: &Value,
     ) -> Option<LayoutDetails> {
@@ -263,7 +269,7 @@ impl Layout {
 
     /// Read the contents of a file as JSON and, if valid against the schema, return an instance
     /// of 'LayoutDetails'
-    fn read_layout_file<P: AsRef<Path> + std::fmt::Display>(
+    fn read_layout_file<P: AsRef<Path> + std::fmt::Debug>(
         path: P,
         schema: &Value,
     ) -> Result<LayoutDetails, LayoutError> {
@@ -278,7 +284,7 @@ impl Layout {
                         if let Ok(layout) = serde_json::from_value(json_value) {
                             Ok(layout)
                         } else {
-                            error!("conversion to struct failed for {}", path);
+                            error!("conversion to struct failed for {:?}", path);
                             Err(LayoutError::Schema(
                                 "(failed to convert JSON to struct)".to_string(),
                             ))
@@ -295,7 +301,7 @@ impl Layout {
                         Err(LayoutError::Schema(pathstr.to_string()))
                     }
                 } else {
-                    error!("reading file {} as json failed", path);
+                    error!("reading file {:?} as json failed", path);
                     Err(LayoutError::Schema("(non-utf8 path)".to_string()))
                 }
             }
@@ -309,8 +315,6 @@ mod test_cbus {
     use super::*;
     use env_logger::Target;
     use log::{LevelFilter, error, info};
-    use std::fs;
-    use std::io::Write;
 
     const GOOD_ITEM_DATA_1: &str = r#"
         name=101R
@@ -502,19 +506,19 @@ mod test_layout {
             .try_init();
     }
 
-    fn setup_file<P: AsRef<Path> + std::fmt::Display>(test_file: P, data: &str) {
+    fn setup_file<P: AsRef<Path> + std::fmt::Debug>(test_file: P, data: &str) {
         if let Ok(mut f) = File::create(&test_file) {
             if let Err(e) = f.write_all(data.as_bytes()) {
-                error!("{}: file {} write failed", e, test_file);
+                error!("{}: file {:?} write failed", e, test_file);
             }
         } else {
-            error!("file {} creation failed", test_file);
+            error!("file {:?} creation failed", test_file);
         }
     }
 
-    fn teardown_file<P: AsRef<Path> + std::fmt::Display>(test_file: P) {
+    fn teardown_file<P: AsRef<Path> + std::fmt::Debug>(test_file: P) {
         if let Err(e) = fs::remove_file(&test_file) {
-            error!("{}: file {} deletion failed", e, test_file);
+            error!("{}: file {:?} deletion failed", e, test_file);
         }
     }
 
@@ -598,5 +602,90 @@ mod test_layout {
                 }
             }
         }
+    }
+}
+
+#[allow(dead_code)]
+pub struct LocalPanel {
+    title: String,
+    layout: LayoutDetails,
+}
+
+/// Type alias for list of defined layout definitions
+pub type LocalPanelVec = Vec<LocalPanel>;
+
+pub struct LPV {
+    pub lpv: LocalPanelVec,
+}
+
+impl LPV {
+    pub fn new<P: AsRef<Path> + std::fmt::Debug>(layout_path: P) -> LPV {
+        let mut layouts: LocalPanelVec = LocalPanelVec::new();
+        let options = MatchOptions {
+            case_sensitive: false,
+            require_literal_leading_dot: true,
+            require_literal_separator: true,
+        };
+        if let Some(pattern) = layout_path.as_ref().to_path_buf().join("*.json").to_str() {
+            for entry in glob_with(pattern, options).unwrap().flatten() {
+                let l = Layout::new(entry);
+                match l.layout {
+                    Some(ld) => match ld.panel {
+                        Some(ref p) => {
+                            let lp: LocalPanel = LocalPanel {
+                                title: p.diagram.title.clone(),
+                                layout: ld,
+                            };
+                            layouts.push(lp);
+                        }
+                        None => continue,
+                    },
+                    None => continue,
+                }
+            }
+        } else {
+            // Report glob error
+            error!("Bad path to layout definition files");
+        }
+        LPV { lpv: layouts }
+    }
+}
+
+#[cfg(test)]
+mod test_lpv {
+    use super::*;
+    use env_logger::Target;
+    use log::{LevelFilter, error, info};
+
+    fn init_logging() {
+        let _ = env_logger::builder()
+            .target(Target::Stdout)
+            .filter_level(LevelFilter::max())
+            .is_test(true)
+            .try_init();
+    }
+
+    #[test]
+    fn lpv_bad_path() {
+        init_logging();
+
+        let lpv = LPV::new("panel");
+
+        assert_eq!(lpv.lpv.len(), 0);
+    }
+    #[test]
+    fn lpv_good_path() {
+        init_logging();
+
+        let lpv = LPV::new("scratch");
+
+        let item = &lpv.lpv[0];
+        if let Some(p) = &item.layout.panel {
+            info!("The title of the item is '{:#?}'", p.diagram.title);
+            assert_eq!(p.diagram.title, item.title);
+        } else {
+            panic!("no panel details available");
+        }
+        assert_eq!(lpv.lpv.len(), 1);
     }
 }
