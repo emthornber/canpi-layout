@@ -1,10 +1,14 @@
 //! # canpi-layout
 //!
 //! A module to provide functionality to read and validate the canpi layout
-//! display configuration and to read and validate the CBUS linkage items.
+//! display configuration and the CBUS linkage items.
 //!
 //! 13 July, 2026 - E M Thornber
-//
+//! Created
+//!
+//!     7 August, 2026 - E M Thornber
+//!     Added file path of layout definition file to LocalPanel struct
+//!
 
 use schemars::Schema;
 use schemars::{JsonSchema, schema_for};
@@ -14,7 +18,7 @@ use serde_json::Value;
 use core::str;
 use glob::MatchOptions;
 use glob::glob_with;
-use std::{fs::File, io::BufReader, path::Path, string::String};
+use std::{ffi::OsString, fs::File, io::BufReader, path::Path, string::String};
 
 use log::error;
 use thiserror::Error;
@@ -609,6 +613,7 @@ mod test_layout {
 pub struct LocalPanel {
     title: String,
     layout: LayoutDetails,
+    file_path: OsString,
 }
 
 /// Type alias for list of defined layout definitions
@@ -628,13 +633,14 @@ impl LPV {
         };
         if let Some(pattern) = layout_path.as_ref().to_path_buf().join("*.json").to_str() {
             for entry in glob_with(pattern, options).unwrap().flatten() {
-                let l = Layout::new(entry);
+                let l = Layout::new(&entry);
                 match l.layout {
                     Some(ld) => match ld.panel {
                         Some(ref p) => {
                             let lp: LocalPanel = LocalPanel {
                                 title: p.diagram.title.clone(),
                                 layout: ld,
+                                file_path: entry.into_os_string(),
                             };
                             layouts.push(lp);
                         }
@@ -655,7 +661,7 @@ impl LPV {
 mod test_lpv {
     use super::*;
     use env_logger::Target;
-    use log::{LevelFilter, error, info};
+    use log::{LevelFilter, info};
 
     fn init_logging() {
         let _ = env_logger::builder()
@@ -686,6 +692,7 @@ mod test_lpv {
         } else {
             panic!("no panel details available");
         }
+        info!("The path of the item is '{:#?}'", item.file_path);
         assert_eq!(lpv.lpv.len(), 1);
     }
 }
