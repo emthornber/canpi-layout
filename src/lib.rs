@@ -86,7 +86,7 @@ pub struct CBusLink {
 ///
 /// Panel Definitions
 ///
-/// Coordinates of a tile in the diagram
+/// Coordinates of a tile in the mosaic
 #[derive(Clone, Deserialize, Debug, JsonSchema, PartialEq)]
 pub struct Tile {
     x_coord: u32,
@@ -110,11 +110,11 @@ pub enum SwitchType {
 
 #[allow(dead_code)]
 #[derive(Clone, Deserialize, Debug, JsonSchema)]
-/// Definition of a control in the diagram
+/// Definition of a control in the mosaic
 pub struct Control {
-    /// Coordinates of the control in the diagram
+    /// Coordinates of the control in the mosaic
     tile: Tile,
-    /// Name of the control in the diagram
+    /// Name of the control in the mosaic
     name: String,
     /// Type of switch
     switch: SwitchType,
@@ -126,26 +126,26 @@ pub struct Control {
 
 #[allow(dead_code)]
 #[derive(Clone, Deserialize, Debug, JsonSchema)]
-/// Definition of the diagram for the panel
-pub struct Diagram {
-    /// Width of the diagram in tiles
+/// Definition of the mosaic for the panel
+pub struct Mosaic {
+    /// Width of the mosaic in tiles
     width: u32,
-    /// Height of the diagram in tiles
+    /// Height of the mosaic in tiles
     height: u32,
     /// Size of each (square) tile in pixels
     tilesize: u32,
     /// Colour of the tile background as a hexadecimal string
     /// (e.g. "#000000" for black)
     colour: String,
-    /// Margin around the diagram when drawn (pixels)
+    /// Margin around the mosaic when drawn (pixels)
     margins: u32,
-    /// Width of black border around the diagram (pixels)
+    /// Width of black border around the mosaic (pixels)
     border: u32,
     /// Title of the layout represented by the Panel
     title: String,
 }
 
-/// Definition of the direction of a track in the diagram
+/// Definition of the direction of a track in the mosaic
 /// (e.g. North-South, East-West, etc.)
 #[derive(Clone, Deserialize, Debug, JsonSchema, PartialEq)]
 pub enum Direction {
@@ -160,9 +160,9 @@ pub enum Direction {
 #[allow(dead_code)]
 #[derive(Clone, Deserialize, Debug, JsonSchema)]
 pub struct Track {
-    /// Coordinates of the track segment in the diagram
+    /// Coordinates of the track segment in the mosaic
     tile: Tile,
-    /// Direction of the track segment in the diagram
+    /// Direction of the track segment in the mosaic
     direction: Direction,
     /// Track circuit name
     label: Option<String>,
@@ -172,7 +172,7 @@ pub struct Track {
     spot: Option<String>,
 }
 
-/// Definition of the direction of a turnout in the diagram
+/// Definition of the direction of a turnout in the mosaic
 /// (e.g. Left, Right, Wye)
 #[derive(Clone, Deserialize, Debug, JsonSchema, PartialEq)]
 pub enum Hand {
@@ -181,7 +181,7 @@ pub enum Hand {
     Wye,
 }
 
-/// Definition of the orientation of a turnout in the diagram
+/// Definition of the orientation of a turnout in the mosaic
 /// (e.g. North, East, South, West)
 #[derive(Clone, Deserialize, Debug, JsonSchema, PartialEq)]
 pub enum Orientation {
@@ -193,13 +193,13 @@ pub enum Orientation {
 
 #[derive(Clone, Deserialize, Debug, JsonSchema, PartialEq)]
 pub struct TurnOut {
-    /// Coordinates of the turnout in the diagram
+    /// Coordinates of the turnout in the mosaic
     tile: Tile,
-    /// Name of the turnout in the diagram
+    /// Name of the turnout in the mosaic
     name: String,
-    /// Direction of the turnout in the diagram
+    /// Direction of the turnout in the mosaic
     hand: Hand,
-    /// Orientation of the turnout in the diagram
+    /// Orientation of the turnout in the mosaic
     orientation: Orientation,
     /// Names of the CBus events that indicate turnout position (Normal and Reverse)
     tostate: TOState,
@@ -209,13 +209,13 @@ pub struct TurnOut {
 #[derive(Clone, Deserialize, Debug, JsonSchema)]
 /// Definition of the panel details
 pub struct PanelDetails {
-    /// Definition of the diagram dimensions and appearance
-    diagram: Diagram,
-    /// Definitions of the controls in the diagram
+    /// Definition of the mosaic dimensions and appearance
+    mosaic: Mosaic,
+    /// Definitions of the controls in the mosaic
     controls: Vec<Control>,
-    /// Definitions of the tracki segments in the diagram
+    /// Definitions of the tracki segments in the mosaic
     tracks: Vec<Track>,
-    /// Definitions of the turnouts in the diagram
+    /// Definitions of the turnouts in the mosaic
     turnouts: Vec<TurnOut>,
 }
 
@@ -410,7 +410,7 @@ mod test_layout {
             }
         ],
         "panel": {
-            "diagram": {
+            "mosaic": {
                 "width": 10,
                 "height": 5,
                 "tilesize": 20,
@@ -458,7 +458,7 @@ mod test_layout {
             }
         ],
         "panel": {
-            "diagram": {
+            "mosaic": {
                 "width": 10,
                 "height": 5,
                 "tilesize": 20,
@@ -590,7 +590,7 @@ mod test_layout {
             match layout_details {
                 Some(ld) => match ld.panel {
                     Some(pd) => {
-                        assert_eq!(pd.diagram.width, 11);
+                        assert_eq!(pd.mosaic.width, 11);
                     }
                     None => {
                         panic!("Failed to load panel details");
@@ -633,7 +633,7 @@ impl LPV {
                     Some(ld) => match ld.panel {
                         Some(ref p) => {
                             let lp: LocalPanel = LocalPanel {
-                                title: p.diagram.title.clone(),
+                                title: p.mosaic.title.clone(),
                                 layout: ld,
                                 file_path: entry,
                             };
@@ -682,8 +682,8 @@ mod test_lpv {
 
         let item = &lpv.lpv[0];
         if let Some(p) = &item.layout.panel {
-            info!("The title of the item is '{:#?}'", p.diagram.title);
-            assert_eq!(p.diagram.title, item.title);
+            info!("The title of the item is '{:#?}'", p.mosaic.title);
+            assert_eq!(p.mosaic.title, item.title);
         } else {
             panic!("no panel details available");
         }

@@ -30,7 +30,7 @@
 		}
 	],
 	"panel": {
-		"diagram": {
+		"mosaic": {
 			"width": 11,
 			"height": 5,
 			"tilesize": 60,
