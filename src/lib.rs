@@ -6,8 +6,8 @@
 //! 13 July, 2026 - E M Thornber
 //! Created
 //!
-//!     7 August, 2026 - E M Thornber
-//!     Added file path of layout definition file to LocalPanel struct
+//! 7 August, 2026 - E M Thornber
+//! Added file path of layout definition file to LocalPanel struct
 //!
 
 use schemars::Schema;
@@ -18,7 +18,8 @@ use serde_json::Value;
 use core::str;
 use glob::MatchOptions;
 use glob::glob_with;
-use std::{ffi::OsString, fs::File, io::BufReader, path::Path, string::String};
+use std::path::PathBuf;
+use std::{fs::File, io::BufReader, path::Path, string::String};
 
 use log::error;
 use thiserror::Error;
@@ -80,12 +81,6 @@ pub struct CBusLink {
     pub event: Option<String>,
     /// Current state of event.
     pub state: State,
-}
-
-/// The structure that holds the definitions of CBus links
-#[derive(Clone, Deserialize, Debug, JsonSchema)]
-pub struct CBusDetails {
-    pub cbus: Vec<CBusLink>,
 }
 
 ///
@@ -227,7 +222,7 @@ pub struct PanelDetails {
 #[derive(Clone, Deserialize, Debug, JsonSchema)]
 /// Definition of the Layout details
 pub struct LayoutDetails {
-    pub cbus: Option<CBusDetails>,
+    pub cbus: Option<Vec<CBusLink>>,
     pub panel: Option<PanelDetails>,
 }
 
@@ -611,9 +606,9 @@ mod test_layout {
 
 #[allow(dead_code)]
 pub struct LocalPanel {
-    title: String,
-    layout: LayoutDetails,
-    file_path: OsString,
+    pub title: String,
+    pub layout: LayoutDetails,
+    pub file_path: PathBuf,
 }
 
 /// Type alias for list of defined layout definitions
@@ -640,7 +635,7 @@ impl LPV {
                             let lp: LocalPanel = LocalPanel {
                                 title: p.diagram.title.clone(),
                                 layout: ld,
-                                file_path: entry.into_os_string(),
+                                file_path: entry,
                             };
                             layouts.push(lp);
                         }
