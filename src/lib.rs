@@ -605,6 +605,7 @@ mod test_layout {
 }
 
 #[allow(dead_code)]
+#[derive(Clone)]
 pub struct LocalPanel {
     pub title: String,
     pub layout: LayoutDetails,
@@ -614,6 +615,7 @@ pub struct LocalPanel {
 /// Type alias for list of defined layout definitions
 pub type LocalPanelVec = Vec<LocalPanel>;
 
+#[derive(Clone)]
 pub struct LPV {
     pub lpv: LocalPanelVec,
 }
