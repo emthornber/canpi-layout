@@ -1,6 +1,6 @@
 # Change Log
 
-canpi-config (0.1.0) trixie; urgency=low
+canpi-config (0.1.3) trixie; urgency=low
 
 - Added test_case functionality to test all layout files
 - Added test layout definitions
