@@ -1,0 +1,333 @@
+{
+	"cbusstates": [
+		{
+			"name": "TCAA",
+			"event": "N5E3",
+			"state": "UNKN"
+		},
+		{
+			"name": "TCAAS",
+			"event": "N5E4",
+			"state": "UNKN"
+		},
+		{
+			"name": "TCBA",
+			"event": "N5E1",
+			"state": "UNKN"
+		},
+		{
+			"name": "TCBB",
+			"event": "N6E1",
+			"state": "UNKN"
+		},
+		{
+			"name": "TCBBS",
+			"event": "N6E2",
+			"state": "UNKN"
+		},
+		{
+			"name": "TCCA",
+			"event": "N5E1",
+			"state": "UNKN"
+		},
+		{
+			"name": "TCCB",
+			"event": "N6E3",
+			"state": "UNKN"
+		},
+		{
+			"name": "TCCBS",
+			"event": "N6E4",
+			"state": "UNKN"
+		},
+		{
+			"name": "TCDA",
+			"event": "N7E3",
+			"state": "UNKN"
+		},
+		{
+			"name": "TCDAS",
+			"event": "N7E4",
+			"state": "UNKN"
+		},
+		{
+			"name": "101",
+			"event": "N5E5",
+			"state": "UNKN"
+		},
+		{
+			"name": "101N",
+			"event": "N5E6",
+			"state": "UNKN"
+		},
+		{
+			"name": "101R",
+			"event": "N5E7",
+			"state": "UNKN"
+		},
+		{
+			"name": "102",
+			"event": "N6E5",
+			"state": "UNKN"
+		},
+		{
+			"name": "102N",
+			"event": "N6E6",
+			"state": "UNKN"
+		},
+		{
+			"name": "102R",
+			"event": "N6E7",
+			"state": "UNKN"
+		},
+		{
+			"name": "OOU1N",
+			"state": "ZERO"
+		},
+		{
+			"name": "OOU1R",
+			"state": "ONE"
+		},
+		{
+			"name": "OOU2N",
+			"state": "ONE"
+		},
+		{
+			"name": "OOU2R",
+			"state": "ZERO"
+		}
+	],
+	"panel": {
+		"mosaic": {
+			"width": 11,
+			"height": 5,
+			"tilesize": 60,
+			"colour": "#a4b887",
+			"margins": 10,
+			"border": 2,
+			"title": "CAG CBUS Demo (Elm)"
+		},
+		"controls": [
+			{
+				"tile": {
+					"x_coord": 3,
+					"y_coord": 1
+				},
+				"name": "101",
+				"switch": "Toggle",
+				"action": "101",
+				"tostate": {
+					"normal": "101N",
+					"reverse": "101R"
+				}
+			},
+			{
+				"tile": {
+					"x_coord": 9,
+					"y_coord": 1
+				},
+				"name": "102",
+				"switch": "Toggle",
+				"action": "102",
+				"tostate": {
+					"normal": "102N",
+					"reverse": "102R"
+				}
+			}
+		],
+		"tracks": [
+			{
+				"tile": {
+					"x_coord": 1,
+					"y_coord": 3
+				},
+				"direction": "EW",
+				"tcstate": "TCAA",
+				"spot": "TCAAS"
+			},
+			{
+				"tile": {
+					"x_coord": 2,
+					"y_coord": 3
+				},
+				"direction": "EW",
+				"label": "AA",
+				"tcstate": "TCAA"
+			},
+			{
+				"tile": {
+					"x_coord": 4,
+					"y_coord": 2
+				},
+				"direction": "EW",
+				"label": "BA",
+				"tcstate": "TCBA"
+			},
+			{
+				"tile": {
+					"x_coord": 5,
+					"y_coord": 2
+				},
+				"direction": "EW",
+				"tcstate": "TCBA"
+			},
+			{
+				"tile": {
+					"x_coord": 6,
+					"y_coord": 2
+				},
+				"direction": "EW",
+				"label": "BB",
+				"tcstate": "TCBB"
+			},
+			{
+				"tile": {
+					"x_coord": 7,
+					"y_coord": 2
+				},
+				"direction": "EW",
+				"tcstate": "TCBB",
+				"spot": "TCBBS"
+			},
+			{
+				"tile": {
+					"x_coord": 4,
+					"y_coord": 4
+				},
+				"direction": "EW",
+				"label": "CA",
+				"tcstate": "TCCA"
+			},
+			{
+				"tile": {
+					"x_coord": 5,
+					"y_coord": 4
+				},
+				"direction": "EW",
+				"tcstate": "TCCA"
+			},
+			{
+				"tile": {
+					"x_coord": 6,
+					"y_coord": 4
+				},
+				"direction": "EW",
+				"tcstate": "TCCB",
+				"spot": "TCCBS"
+			},
+			{
+				"tile": {
+					"x_coord": 7,
+					"y_coord": 4
+				},
+				"direction": "EW",
+				"label": "CB",
+				"tcstate": "TCCB"
+			},
+			{
+				"tile": {
+					"x_coord": 8,
+					"y_coord": 4
+				},
+				"direction": "EW",
+				"tcstate": "TCDA"
+			},
+			{
+				"tile": {
+					"x_coord": 10,
+					"y_coord": 4
+				},
+				"direction": "EW",
+				"label": "DA",
+				"tcstate": "TCDA"
+			},
+			{
+				"tile": {
+					"x_coord": 11,
+					"y_coord": 4
+				},
+				"direction": "EW",
+				"tcstate": "TCDA",
+				"spot": "TCDAS"
+			},
+			{
+				"tile": {
+					"x_coord": 8,
+					"y_coord": 2
+				},
+				"direction": "SW",
+				"tcstate": "TCDA"
+			},
+			{
+				"tile": {
+					"x_coord": 8,
+					"y_coord": 3
+				},
+				"direction": "NE",
+				"tcstate": "TCDA"
+			},
+			{
+				"tile": {
+					"x_coord": 9,
+					"y_coord": 3
+				},
+				"direction": "SW",
+				"tcstate": "TCDA"
+			}
+		],
+		"turnouts": [
+			{
+				"tile": {
+					"x_coord": 3,
+					"y_coord": 2
+				},
+				"name": "OOU",
+				"hand": "Wye",
+				"orientation": "West",
+				"tostate": {
+					"normal": "OOU1N",
+					"reverse": "OOU1R"
+				}
+			},
+			{
+				"tile": {
+					"x_coord": 3,
+					"y_coord": 3
+				},
+				"name": "101",
+				"hand": "Wye",
+				"orientation": "East",
+				"tostate": {
+					"normal": "101N",
+					"reverse": "101R"
+				}
+			},
+			{
+				"tile": {
+					"x_coord": 3,
+					"y_coord": 4
+				},
+				"name": "OOU",
+				"hand": "Wye",
+				"orientation": "West",
+				"tostate": {
+					"normal": "OOU2N",
+					"reverse": "OOU2R"
+				}
+			},
+			{
+				"tile": {
+					"x_coord": 9,
+					"y_coord": 4
+				},
+				"name": "102",
+				"hand": "Right",
+				"orientation": "West",
+				"tostate": {
+					"normal": "102N",
+					"reverse": "102R"
+				}
+			}
+		]
+	}
+}

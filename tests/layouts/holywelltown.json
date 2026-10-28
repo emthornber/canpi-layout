@@ -1,0 +1,328 @@
+{
+	"cbusstates": [
+		{
+			"name": "TCAA",
+			"event": "N111E1",
+			"state": "UNKN"
+		},
+		{
+			"name": "101",
+			"event": "101",
+			"state": "UNKN"
+		},
+		{
+			"name": "101N",
+			"event": "N111E2",
+			"state": "UNKN"
+		},
+		{
+			"name": "101R",
+			"event": "N111E3",
+			"state": "UNKN"
+		},
+		{
+			"name": "TCAB",
+			"event": "N121E1",
+			"state": "UNKN"
+		},
+		{
+			"name": "TCAC",
+			"event": "N121E2",
+			"state": "UNKN"
+		},
+		{
+			"name": "TCBC",
+			"event": "N121E3",
+			"state": "UNKN"
+		},
+		{
+			"name": "201",
+			"event": "201",
+			"state": "UNKN"
+		},
+		{
+			"name": "201N",
+			"event": "N122E1",
+			"state": "UNKN"
+		},
+		{
+			"name": "201R",
+			"event": "N122E2",
+			"state": "UNKN"
+		},
+		{
+			"name": "202",
+			"event": "202",
+			"state": "UNKN"
+		},
+		{
+			"name": "202N",
+			"event": "N122E3",
+			"state": "UNKN"
+		},
+		{
+			"name": "202R",
+			"event": "N122E4",
+			"state": "UNKN"
+		},
+		{
+			"name": "UNC21",
+			"event": "21",
+			"state": "UNKN"
+		},
+		{
+			"name": "UNC22",
+			"event": "22",
+			"state": "UNKN"
+		},
+		{
+			"name": "UNC23",
+			"event": "23",
+			"state": "UNKN"
+		},
+		{
+			"name": "TCAD",
+			"event": "N131E1",
+			"state": "UNKN"
+		},
+		{
+			"name": "TCBD",
+			"event": "N131E2",
+			"state": "UNKN"
+		},
+		{
+			"name": "301",
+			"event": "301",
+			"state": "UNKN"
+		},
+		{
+			"name": "301N",
+			"event": "N132E1",
+			"state": "UNKN"
+		},
+		{
+			"name": "301R",
+			"event": "N132E2",
+			"state": "UNKN"
+		},
+		{
+			"name": "302",
+			"event": "302",
+			"state": "UNKN"
+		},
+		{
+			"name": "302N",
+			"event": "N132E3",
+			"state": "UNKN"
+		},
+		{
+			"name": "302R",
+			"event": "N132E4",
+			"state": "UNKN"
+		},
+		{
+			"name": "303",
+			"event": "303",
+			"state": "UNKN"
+		},
+		{
+			"name": "303N",
+			"event": "N132E5",
+			"state": "UNKN"
+		},
+		{
+			"name": "303R",
+			"event": "N132E6",
+			"state": "UNKN"
+		},
+		{
+			"name": "UNC31",
+			"event": "31",
+			"state": "UNKN"
+		}
+	],
+	"panel": {
+		"mosaic": {
+			"width": 11,
+			"height": 5,
+			"tilesize": 60,
+			"colour": "#a4b887",
+			"margins": 10,
+			"border": 2,
+			"title": "Holywell Town (Elm)"
+		},
+		"controls": [
+			{
+				"tile": {
+					"x_coord": 3,
+					"y_coord": 1
+				},
+				"name": "101",
+				"switch": "Toggle",
+				"action": "101",
+				"tostate": {
+					"normal": "101N",
+					"reverse": "101R"
+				}
+			},
+			{
+				"tile": {
+					"x_coord": 3,
+					"y_coord": 1
+				},
+				"name": "201",
+				"switch": "Toggle",
+				"action": "201",
+				"tostate": {
+					"normal": "201N",
+					"reverse": "201R"
+				}
+			},
+			{
+				"tile": {
+					"x_coord": 3,
+					"y_coord": 1
+				},
+				"name": "202",
+				"switch": "Toggle",
+				"action": "202",
+				"tostate": {
+					"normal": "202N",
+					"reverse": "202R"
+				}
+			},
+			{
+				"tile": {
+					"x_coord": 3,
+					"y_coord": 1
+				},
+				"name": "UNC21",
+				"switch": "PushButton",
+				"action": "21"
+			},
+			{
+				"tile": {
+					"x_coord": 3,
+					"y_coord": 1
+				},
+				"name": "UNC22",
+				"switch": "PushButton",
+				"action": "22"
+			},
+			{
+				"tile": {
+					"x_coord": 3,
+					"y_coord": 1
+				},
+				"name": "UNC23",
+				"switch": "PushButton",
+				"action": "23"
+			},
+			{
+				"tile": {
+					"x_coord": 3,
+					"y_coord": 1
+				},
+				"name": "301",
+				"switch": "Toggle",
+				"action": "301",
+				"tostate": {
+					"normal": "301N",
+					"reverse": "301R"
+				}
+			},
+			{
+				"tile": {
+					"x_coord": 3,
+					"y_coord": 1
+				},
+				"name": "302",
+				"switch": "Toggle",
+				"action": "302",
+				"tostate": {
+					"normal": "302N",
+					"reverse": "302R"
+				}
+			},
+			{
+				"tile": {
+					"x_coord": 3,
+					"y_coord": 1
+				},
+				"name": "303",
+				"switch": "Toggle",
+				"action": "303",
+				"tostate": {
+					"normal": "303N",
+					"reverse": "303R"
+				}
+			},
+			{
+				"tile": {
+					"x_coord": 3,
+					"y_coord": 1
+				},
+				"name": "UNC31",
+				"switch": "PushButton",
+				"action": "31"
+			}
+		],
+		"tracks": [
+			{
+				"tile": {
+					"x_coord": 1,
+					"y_coord": 3
+				},
+				"direction": "EW",
+				"tcstate": "TCAA",
+				"spot": "TCAAS"
+			},
+			{
+				"tile": {
+					"x_coord": 2,
+					"y_coord": 3
+				},
+				"direction": "EW",
+				"label": "AA",
+				"tcstate": "TCAA"
+			},
+			{
+				"tile": {
+					"x_coord": 4,
+					"y_coord": 2
+				},
+				"direction": "EW",
+				"label": "BA",
+				"tcstate": "TCBA"
+			}
+		],
+		"turnouts": [
+			{
+				"tile": {
+					"x_coord": 5,
+					"y_coord": 2
+				},
+				"name": "OOU",
+				"hand": "Wye",
+				"orientation": "West",
+				"tostate": {
+					"normal": "OOU1N",
+					"reverse": "OOU1R"
+				}
+			},
+			{
+				"tile": {
+					"x_coord": 3,
+					"y_coord": 3
+				},
+				"name": "101",
+				"hand": "Wye",
+				"orientation": "East",
+				"tostate": {
+					"normal": "101N",
+					"reverse": "101R"
+				}
+			}
+		]
+	}
+}

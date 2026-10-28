@@ -121,7 +121,7 @@ pub struct Control {
     /// Name of CBus event to use when the control is activated
     action: String,
     /// Names of the CBus events that indicate turnout position (Normal and Reverse)
-    tostate: TOState,
+    tostate: Option<TOState>,
 }
 
 #[allow(dead_code)]
@@ -316,14 +316,18 @@ mod test_cbus {
     use log::{LevelFilter, error, info};
 
     const GOOD_ITEM_DATA_1: &str = r#"
-        name=101R
-        event=N5E5
-        state=UNKN
+    {
+        "name": "101R",
+        "event": "N5E5",
+        "state": "ZERO"
+    }
         "#;
 
     const GOOD_ITEM_DATA_2: &str = r#"
-        name=OOU1
-        state=ZERO
+    {
+        "name": "OOU1",
+        "state": "UNKN"
+    }
         "#;
 
     fn init_logging() {
@@ -346,7 +350,7 @@ mod test_cbus {
         match a {
             Ok(a) => {
                 info!("CBusLink is {:#?} ({:#?} {:#?})", a.name, a.event, a.state);
-                assert_eq!(a.state, State::UNKN);
+                assert_eq!(a.state, State::ZERO);
             }
             Err(e) => error!("{}: Failed to deserialize", e),
         }
@@ -389,6 +393,7 @@ mod test_layout {
     use log::{LevelFilter, error, info};
     use std::io::Write;
     use std::{env, fs};
+    use test_case::test_case;
 
     const GOOD_PANEL_DATA: &str = r#"
     {
@@ -522,6 +527,14 @@ mod test_layout {
     }
 
     #[test]
+    fn check_schema_generation() {
+        // Initialise Logger
+        init_logging();
+
+        let _layout_schema = schema_for!(LayoutDetails);
+    }
+
+    #[test]
     #[ignore = "verbose output"]
     fn view_generated_schema() {
         // Initialise Logger
@@ -545,15 +558,14 @@ mod test_layout {
         init_logging();
 
         let defn_file = "scratch/bad_layout_data.json";
-        setup_file(&defn_file, BAD_PANEL_DATA);
+        setup_file(defn_file, BAD_PANEL_DATA);
         let schema = Layout::create_layout_schema();
-        let bad_result = Layout::read_layout_file(&defn_file, &schema);
-        teardown_file(&defn_file);
+        let bad_result = Layout::read_layout_file(defn_file, &schema);
+        teardown_file(defn_file);
         match bad_result {
-            Ok(_) => assert!(false),
+            Ok(_) => panic!(),
             Err(e) => {
                 error!("{}", e);
-                assert!(true);
             }
         }
     }
@@ -565,40 +577,54 @@ mod test_layout {
         init_logging();
 
         let defn_file = "scratch/good_layout_data.json";
-        setup_file(&defn_file, GOOD_PANEL_DATA);
+        setup_file(defn_file, GOOD_PANEL_DATA);
         let schema = Layout::create_layout_schema();
-        let good_result = Layout::read_layout_file(&defn_file, &schema);
-        teardown_file(&defn_file);
+        let good_result = Layout::read_layout_file(defn_file, &schema);
+        teardown_file(defn_file);
         match good_result {
-            Ok(_) => assert!(true),
+            Ok(_) => info!("layout data validated"),
             Err(e) => {
                 error!("{}", e);
-                assert!(false);
+                panic!();
             }
         }
     }
 
-    #[test]
-    fn load_layout_test() {
+    #[test_case("scratch/example.json")]
+    #[test_case("tests/layouts/cagdemo.json")]
+    #[test_case("tests/layouts/holywelltown.json")]
+    fn load_layout_test(f: &str) {
         // Initialise Logger
         init_logging();
 
         dotenv().ok();
-        if let Ok(layout_file) = env::var("LAYOUT_FILE") {
-            let schema = Layout::create_layout_schema();
-            let layout_details = Layout::load_layout(layout_file, &schema);
-            match layout_details {
-                Some(ld) => match ld.panel {
-                    Some(pd) => {
-                        assert_eq!(pd.mosaic.width, 11);
-                    }
+        //let layout_file = env::var("LAYOUT_FILE");
+        let layout_file = f;
+        match fs::exists(layout_file) {
+            Ok(true) => {
+                let schema = Layout::create_layout_schema();
+                let layout_details = Layout::load_layout(layout_file, &schema);
+                match layout_details {
+                    Some(ld) => match ld.panel {
+                        Some(pd) => {
+                            assert_eq!(pd.mosaic.width, 11);
+                        }
+                        None => {
+                            panic!("Failed to load panel details");
+                        }
+                    },
                     None => {
-                        panic!("Failed to load panel details");
+                        panic!("Failed to load layout details");
                     }
-                },
-                None => {
-                    panic!("Failed to load layout details");
                 }
+            }
+            Ok(false) => {
+                error!("Layout file not found: {}", layout_file);
+                panic!();
+            }
+            Err(e) => {
+                error!("Error checking layout file existence: {}", e);
+                panic!();
             }
         }
     }
@@ -621,34 +647,39 @@ pub struct LPV {
 }
 
 impl LPV {
+    pub fn match_options() -> MatchOptions {
+        MatchOptions {
+            case_sensitive: false,
+            require_literal_separator: true,
+            require_literal_leading_dot: true,
+        }
+    }
+
     pub fn new<P: AsRef<Path> + std::fmt::Debug>(layout_path: P) -> LPV {
         let mut layouts: LocalPanelVec = LocalPanelVec::new();
-        let options = MatchOptions {
-            case_sensitive: false,
-            require_literal_leading_dot: true,
-            require_literal_separator: true,
-        };
-        if let Some(pattern) = layout_path.as_ref().to_path_buf().join("*.json").to_str() {
-            for entry in glob_with(pattern, options).unwrap().flatten() {
-                let l = Layout::new(&entry);
-                match l.layout {
-                    Some(ld) => match ld.panel {
-                        Some(ref p) => {
-                            let lp: LocalPanel = LocalPanel {
-                                title: p.mosaic.title.clone(),
-                                layout: ld,
-                                file_path: entry,
-                            };
-                            layouts.push(lp);
-                        }
+        let pattern_result = layout_path.as_ref().join("*.json").to_path_buf();
+        match pattern_result.to_str() {
+            Some(pattern) => {
+                for entry in glob_with(pattern, Self::match_options()).unwrap().flatten() {
+                    let l = Layout::new(&entry);
+                    match l.layout {
+                        Some(ld) => match ld.panel {
+                            Some(ref p) => {
+                                let lp: LocalPanel = LocalPanel {
+                                    title: p.mosaic.title.clone(),
+                                    layout: ld,
+                                    file_path: entry,
+                                };
+                                layouts.push(lp);
+                            }
+                            None => continue,
+                        },
                         None => continue,
-                    },
-                    None => continue,
+                    }
                 }
             }
-        } else {
             // Report glob error
-            error!("Bad path to layout definition files");
+            None => error!("Bad path to layout definition files"),
         }
         LPV { lpv: layouts }
     }
@@ -684,12 +715,12 @@ mod test_lpv {
 
         let item = &lpv.lpv[0];
         if let Some(p) = &item.layout.panel {
-            info!("The title of the item is '{:#?}'", p.mosaic.title);
+            info!("The title of the item is {:#?}", p.mosaic.title);
             assert_eq!(p.mosaic.title, item.title);
         } else {
             panic!("no panel details available");
         }
-        info!("The path of the item is '{:#?}'", item.file_path);
+        info!("The path of the item is {:#?}", item.file_path);
         assert_eq!(lpv.lpv.len(), 1);
     }
 }
